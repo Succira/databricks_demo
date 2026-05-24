@@ -1,5 +1,5 @@
 # Databricks notebook source
-from pyspark.sql.functions import date_format, count, sum
+from pyspark.sql.functions import date_format, count, sum, desc
 
 # COMMAND ----------
 
@@ -24,7 +24,7 @@ pyspark.sql.connect.dataframe.DataFrame.gsum = gsum
 def gcount1(self, col):
     return self.groupBy(date_format(col, "yyyy-MM").alias("year_month")).\
                 agg(count("*").alias("total_records")).\
-                orderBy("year_month").display()
+                orderBy(desc("year_month")).display()
 pyspark.sql.connect.dataframe.DataFrame.gcount1 = gcount1
 
 
@@ -40,22 +40,16 @@ spark.read.table(f"nyctaxi.`02_silver`.{taxi_type}_trips_cleansed").gcount1('pic
 
 # COMMAND ----------
 
-spark.read.table(f"nyctaxi.`02_silver`.{taxi_type}_trips_enriched").gcount1('lpep_pickup_datetime')
+spark.read.table(f"nyctaxi.`02_silver`.{taxi_type}_trips_enriched").gcount1('pickup_datetime')
 
 # COMMAND ----------
 
 spark.read.table("nyctaxi.`03_gold`.daily_trip_summary").\
     groupBy(date_format("pickup_date", "yyyy-MM").alias("year_month")).\
     agg(sum("total_trips").alias("total_records")).\
-    orderBy("year_month").display()
+    orderBy(desc("year_month")).display()
 
 # COMMAND ----------
 
 # MAGIC %sql
 # MAGIC use catalog nyctaxi; select * from `nyctaxi`.`03_gold`.`daily_trip_summary` limit 300;
-
-# COMMAND ----------
-
-df = spark.read.table("nyctaxi.`02_silver`.taxi_zone_lookup")
-df.where('location_id IN (1, 999)').display()
-df.count()
