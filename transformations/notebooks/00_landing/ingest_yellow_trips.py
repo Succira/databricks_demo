@@ -10,14 +10,14 @@ from dateutil.relativedelta import relativedelta
 # two_months_ago = date.today() - relativedelta(months=2)
 # formatted_date = two_months_ago.strftime("%Y-%m")
 
-formatted_date = dbutils.widgets.get("process_date")
+process_date = dbutils.widgets.get("process_date")
 taxi_type = dbutils.widgets.get("taxi_type")
 
 # Define the local directory for this date's data
 dir_path = f"/Volumes/nyctaxi/00_landing/data_sources/{taxi_type}_tripdata"
 
 # Define the full path for the downloaded file
-local_path = f"{dir_path}/{taxi_type}_tripdata_{formatted_date}.parquet"
+local_path = f"{dir_path}/{taxi_type}_tripdata_{process_date}.parquet"
 
 try:
     # Check if the file already exists

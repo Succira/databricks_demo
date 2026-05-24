@@ -1,10 +1,13 @@
 # Databricks notebook source
 from pyspark.sql.functions import col, when, timestamp_diff, year, month
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 # COMMAND ----------
 
-two_month_ago_start = dbutils.widgets.get("process_date") + '-01'
-two_month_ago_end = dbutils.widgets.get("process_date_end") + '-01'
+start_date = dbutils.widgets.get("process_date") + '-01'
+end_date = datetime.strptime(start_date, '%Y-%m-%d') + relativedelta(months=1)
+end_date = end_date.strftime('%Y-%m-%d')
 
 taxi_type = dbutils.widgets.get("taxi_type")
 
@@ -23,7 +26,7 @@ elif taxi_type == 'green':
     df = df.withColumnRenamed("lpep_pickup_datetime", "pickup_datetime")
     df = df.withColumnRenamed("lpep_dropoff_datetime", "dropoff_datetime")
 
-df = df.filter(f"pickup_datetime >= '{two_month_ago_start}' AND pickup_datetime < '{two_month_ago_end}'")
+df = df.filter(f"pickup_datetime >= '{start_date}' AND pickup_datetime < '{end_date}'")
 
 # COMMAND ----------
 

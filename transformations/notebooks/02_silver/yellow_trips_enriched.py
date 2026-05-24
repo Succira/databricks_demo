@@ -1,12 +1,11 @@
 # Databricks notebook source
-two_month_ago_start = dbutils.widgets.get("process_date") + '-01'
-two_month_ago_end = dbutils.widgets.get("process_date_end") + '-01'
+process_date = dbutils.widgets.get("process_date") + '-01'
 
 taxi_type = dbutils.widgets.get("taxi_type")
 
 # Load cleansed trip data and zone lookup tables
 df_trips = spark.read.table(f"nyctaxi.02_silver.{taxi_type}_trips_cleansed")
-df_trips = df_trips.where(df_trips.pickup_datetime >= two_month_ago_start)
+df_trips = df_trips.where(df_trips.pickup_datetime >= process_date)
 
 df_zones = spark.read.table("nyctaxi.02_silver.taxi_zone_lookup")
 

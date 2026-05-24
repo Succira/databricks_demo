@@ -4,14 +4,12 @@ from pyspark.sql.functions import count, max, min, avg, sum, round
 # COMMAND ----------
 
 # Load the enriched trip dataset
-two_month_ago_start = dbutils.widgets.get("process_date") + '-01'
-two_month_ago_end = dbutils.widgets.get("process_date_end") + '-01'
-
+process_date = dbutils.widgets.get("process_date") + '-01'
 
 taxi_type = dbutils.widgets.get("taxi_type")
 
 df = spark.read.table(f"nyctaxi.02_silver.{taxi_type}_trips_enriched")
-df = df.where(df.pickup_datetime >= two_month_ago_start)
+df = df.where(df.pickup_datetime >= process_date)
 
 
 # COMMAND ----------
