@@ -3,26 +3,44 @@ from pyspark.sql.functions import date_format, count, sum
 
 # COMMAND ----------
 
+df = spark.read.table('nyctaxi.`02_silver`.taxi_zone_lookup')
+
+
+import pyspark
+def gcount(self, *col):
+    return self.groupBy(*col).count()
+
+def gsum(self, *col, measure):
+    return self.groupBy(*col).sum(measure)
+
+pyspark.sql.connect.dataframe.DataFrame.gcount = gcount
+pyspark.sql.connect.dataframe.DataFrame.gsum = gsum
+
+# df.display()
+# df.gcount('borough',).display()
+# df.gsum('borough', measure='location_id').display()
+
+
+def gcount1(self, col):
+    return self.groupBy(date_format(col, "yyyy-MM").alias("year_month")).\
+                agg(count("*").alias("total_records")).\
+                orderBy("year_month").display()
+pyspark.sql.connect.dataframe.DataFrame.gcount1 = gcount1
+
+
+# COMMAND ----------
+
 taxi_type = 'green'
 
-spark.read.table(f"nyctaxi.`01_bronze`.{taxi_type}_trips_raw").\
-    groupBy(date_format("lpep_pickup_datetime", "yyyy-MM").alias("year_month")).\
-    agg(count("*").alias("total_records")).\
-    orderBy("year_month").display()
+spark.read.table(f"nyctaxi.`01_bronze`.{taxi_type}_trips_raw").gcount1('lpep_pickup_datetime')
 
 # COMMAND ----------
 
-spark.read.table(f"nyctaxi.`02_silver`.{taxi_type}_trips_cleansed").\
-    groupBy(date_format("pickup_datetime", "yyyy-MM").alias("year_month")).\
-    agg(count("*").alias("total_records")).\
-    orderBy("year_month").display()
+spark.read.table(f"nyctaxi.`02_silver`.{taxi_type}_trips_cleansed").gcount1('pickup_datetime')
 
 # COMMAND ----------
 
-spark.read.table(f"nyctaxi.`02_silver`.{taxi_type}_trips_enriched").\
-    groupBy(date_format("pickup_datetime", "yyyy-MM").alias("year_month")).\
-    agg(count("*").alias("total_records")).\
-    orderBy("year_month").display()
+spark.read.table(f"nyctaxi.`02_silver`.{taxi_type}_trips_enriched").gcount1('lpep_pickup_datetime')
 
 # COMMAND ----------
 
@@ -33,15 +51,11 @@ spark.read.table("nyctaxi.`03_gold`.daily_trip_summary").\
 
 # COMMAND ----------
 
+# MAGIC %sql
+# MAGIC use catalog nyctaxi; select * from `nyctaxi`.`03_gold`.`daily_trip_summary` limit 300;
+
+# COMMAND ----------
+
 df = spark.read.table("nyctaxi.`02_silver`.taxi_zone_lookup")
 df.where('location_id IN (1, 999)').display()
 df.count()
-
-# COMMAND ----------
-
-df.count()
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC use catalog `nyctaxi`; select * from `02_silver`.`taxi_zone_lookup` limit 300;

@@ -34,15 +34,3 @@ df = df.groupBy(df.pickup_datetime.cast("date").alias("pickup_date") ).\
 # Write the daily summary to a Unity Catalog managed Delta table in the gold schema
 df.write.mode("append").saveAsTable("nyctaxi.03_gold.daily_trip_summary")
 
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC use catalog `nyctaxi`; select * from `03_gold`.`daily_trip_summary` limit 100;
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC use catalog `nyctaxi`; 
-# MAGIC
-# MAGIC SELECT date_trunc('MONTH', pickup_date) as month, count(*) FROM `03_gold`.`daily_trip_summary` GROUP BY date_trunc('MONTH', pickup_date)
