@@ -29,7 +29,7 @@ try:
 except:
     try:
         # Construct the URL for the Parquet file corresponding to this month
-        url = f"https://d37ci6vzurychx.cloudfront.net/trip-data/{taxi_type}_tripdata_{formatted_date}.parquet"
+        url = f"https://d37ci6vzurychx.cloudfront.net/trip-data/{taxi_type}_tripdata_{process_date}.parquet"
 
         # Open a connection and stream the remote file
         response = urllib.request.urlopen(url)
