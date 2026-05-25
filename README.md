@@ -6,7 +6,7 @@ A end-to-end data engineering demo built on Databricks, using the NYC Yellow Tax
 
 ## Overview
 
-This project demonstrates how to build a scalable, governed data lakehouse on Databricks. It ingests raw NYC Yellow Taxi trip data from Azure Data Lake Storage (ADLS), transforms it through Bronze → Silver → Gold layers, and exports a clean analytical dataset — all orchestrated via a Databricks Workflow Job backed by Git.
+This project demonstrates how to build a scalable, governed data lakehouse on Databricks. It download raw NYC Yellow Taxi trip data through REST API to databricks managed volume, ingest and transforms it through Bronze → Silver → Gold layers, produce a clean analytical dataset and export partitioned data to a seperate external ADLS storage — all orchestrated via a Databricks Workflow Job backed by Git.
 
 ---
 
@@ -22,7 +22,7 @@ Every layer of the pipeline persists data as Delta tables, enabling ACID transac
 The entire pipeline is orchestrated as a multi-task Databricks Job (`NYC taxi job`) with explicit task dependencies defined as a DAG. The job is connected to this Git repository (`main` branch), so notebook changes are version-controlled and the job always runs from source.
 
 ### External Storage (ADLS)
-Raw source files are stored in Azure Data Lake Storage Gen2 and accessed via Unity Catalog external locations, keeping raw data decoupled from the Databricks-managed storage layer.
+Export data are sent to an external storage that setup with seperate databricks access connector, credential and access role, simulate the seperate the target location requested by another business unit.
 
 ### Parameterized Notebooks
 Utility modules (`date_utils.py`, `file_downloader.py`) and notebooks accept parameters, making runs reusable across date ranges and environments.
@@ -124,7 +124,7 @@ Both ingestion tasks run in parallel, converge at the Silver enrichment step, an
 
 1. **Provision Unity Catalog assets** — run `one_off/creating_catalogs_schemas_volume` once to create the catalog, schemas, and volumes.
 2. **Seed the dimension** — run `one_off/load_taxi_zone_lookup` to load the initial taxi zone reference data.
-3. **Configure the Job** — import the job definition and point it at your ADLS external location via job parameters.
+3. **Configure the Job** — import the job definition and configure job parameters.
 4. **Run the pipeline** — trigger `NYC taxi job` manually or on a schedule. Monitor task progress in the Jobs UI.
 
 For ad-hoc exploration, the notebooks under `ad_hoc/` can be run independently against any layer of the catalog.
@@ -138,6 +138,5 @@ For ad-hoc exploration, the notebooks under `ad_hoc/` can be run independently a
 | Medallion Architecture | Clear separation of concerns between raw, cleansed, and business-ready data; enables incremental reprocessing at any layer |
 | SCD2 for taxi zones | Preserves historical zone boundaries so trip-to-zone joins are point-in-time accurate |
 | Unity Catalog | Single governance layer for access control, lineage, and discoverability across all Delta assets |
-| ADLS External Storage | Raw files remain in cloud object storage under existing data platform policies; Unity Catalog manages access without copying data |
 | Git-backed Workflow Job | Notebook source of truth lives in version control; the job always executes the committed state of `main` |
 | Shared modules | `date_utils.py` and `file_downloader.py` avoid logic duplication across notebooks and make parameterized backfills straightforward |
