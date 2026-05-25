@@ -46,9 +46,9 @@ ADLS (Raw Source)
        │
        ▼
   02_silver         ← Cleansed & enriched:
-  │                     taxi_zone_lookup (SCD Type 2 dimension)
-  │                     yellow_trips_cleansed
-  │                     yellow_trips_enriched
+       │                 taxi_zone_lookup (SCD Type 2 dimension)
+       │                 yellow_trips_cleansed
+       │                 yellow_trips_enriched
        │
        ▼
   03_gold           ← Aggregated: daily_trip_summary
@@ -103,12 +103,9 @@ nyctaxi_project/
 
 The `NYC taxi job` defines the following task dependency graph:
 
-```
-00_ingest_lookup ──────────────────────────────────────────────────────┐
-                                                         02_taxi_zone_lookup ──┐
-00_ingest_yellow_trips ──► 01_yellow_trips_raw ──► 02_yellow_trips_cleansed ──► 02_yellow_trips_enriched ──► 03_daily_trip_summary
-                                                                                                          └──► 04_yellow_trips_export
-```
+
+![Workflow](images/workflow.png)
+
 
 Both ingestion tasks run in parallel, converge at the Silver enrichment step, and fan out to the Gold aggregation and export tasks.
 
