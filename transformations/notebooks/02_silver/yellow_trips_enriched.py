@@ -76,7 +76,3 @@ df_join_final = df_join_1.join(
 
 # Write the enriched dataset to a Unity Catalog managed Delta table in the silver schema
 df_join_final.write.mode("append").saveAsTable(f"nyctaxi.02_silver.{taxi_type}_trips_enriched")
-
-# COMMAND ----------
-
-
