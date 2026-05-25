@@ -51,5 +51,10 @@ spark.read.table("nyctaxi.`03_gold`.daily_trip_summary").\
 
 # COMMAND ----------
 
+taxi_type = 'green'
+spark.read.table(f"nyctaxi.`04_export`.{taxi_type}_trips_export").gcount1('year_month')
+
+# COMMAND ----------
+
 # MAGIC %sql
 # MAGIC use catalog nyctaxi; select * from `nyctaxi`.`03_gold`.`daily_trip_summary` limit 300;

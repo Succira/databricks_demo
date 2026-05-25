@@ -23,12 +23,3 @@ df = df.withColumn("processed_timestamp", current_timestamp())
 
 # Write the DataFrame to a Unity Catalog managed Delta table in the bronze schema, overwriting any existing data
 df.write.mode("append").saveAsTable(f"nyctaxi.01_bronze.{taxi_type}_trips_raw")
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC use catalog `nyctaxi`; 
-# MAGIC
-# MAGIC select year(lpep_pickup_datetime), month(lpep_pickup_datetime), count(*) from `01_bronze`.`green_trips_raw`
-# MAGIC group by  year(lpep_pickup_datetime), month(lpep_pickup_datetime)
-# MAGIC order by  year(lpep_pickup_datetime), month(lpep_pickup_datetime) limit 100;

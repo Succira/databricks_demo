@@ -89,12 +89,3 @@ df = df.select(
 
 # Write cleansed data to a Unity Catalog managed Delta table in the silver schema, overwriting existing data
 df.write.mode("append").saveAsTable(f"nyctaxi.02_silver.{taxi_type}_trips_cleansed")
-
-# COMMAND ----------
-
-
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC use catalog `nyctaxi`; select count(*) from `02_silver`.`green_trips_cleansed`;
